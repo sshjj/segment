@@ -1,0 +1,80 @@
+{
+  "name": "DeepLab",
+  "n_gpu": 1,
+  "use_synch_bn": true,
+  "num_classes": 8,
+  "palette": [0, 0, 0, 150, 250, 0, 0, 250, 0, 0, 100, 0, 200,
+               0, 0, 255, 255, 255, 0, 0, 200, 0, 150, 250],
+  "arch": {
+    "type": "DeepLab",
+    "args": {
+      "in_channels": 4,
+      "backbone": "resnet152",
+      "freeze_bn": false,
+      "freeze_backbone": false
+    }
+  },
+  "train_loader": {
+    "type": "XA",
+    "args": {
+      "data_dir": ".",
+      "batch_size": 1,
+      "base_size": 512,
+      "crop_size": 512,
+      "augment": true,
+      "shuffle": true,
+      "scale": true,
+      "flip": true,
+      "rotate": true,
+      "blur": true,
+      "split": "train",
+      "num_workers": 4,
+      "need_to_cut": false
+    }
+  },
+  "val_loader": {
+    "type": "XA",
+    "args": {
+      "data_dir": ".",
+      "batch_size": 2,
+      "crop_size": 512,
+      "val": true,
+      "split": "val",
+      "num_workers": 4
+    }
+  },
+  "optimizer": {
+    "type": "SGD",
+    "differential_lr": true,
+    "args": {
+      "lr": 0.01,
+      "weight_decay": 1e-4,
+      "momentum": 0.9
+    }
+  },
+  "loss": "CrossEntropyLoss2d",
+  "ignore_index": 255,
+  "lr_scheduler": {
+    "type": "Poly",
+    "args": {}
+  },
+  "trainer": {
+    "epochs": 30,
+    "save_dir": "saved/",
+    "save_period": 1,
+    "monitor": "max Mean_IoU",
+    "early_stop": 10,
+    "tensorboard": true,
+    "log_dir": "saved/runs",
+    "log_per_iter": 20,
+    "val": true,
+    "val_per_epochs": 1
+  },
+  "inference": {
+    "model_weight_path": "./best_model_deeplabv3plus_4.pth",
+    "images_dir_path": "./data/images",
+    "output_path": "./outputs",
+    "extension": ".tiff",
+    "patch_size": 200
+  }
+}
